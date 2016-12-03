@@ -58,7 +58,7 @@ if [ -n "${1}" ]; then
 	fi
 fi
 
-topdir=$(basename $(readlink -f $(dirname ${BASH_SOURCE[0]})))
+topdir=$(builtin cd "`dirname "${BASH_SOURCE[0]}"`" > /dev/null && pwd)
 
 cat <<-EOF > ${tf}
 	[ -s "\${HOME}"/.bashrc ] && source "\${HOME}"/.bashrc
@@ -115,7 +115,7 @@ variable to reflect your current IP address.\n"
 	if [ -z "${your_ip}" ] && [ -z "${your_hostname}" ]; then
 		echo -ne "EXITING - Please edit this file, modifying to specify \
 your_ip or your_hostname.\n"
-		exit 1	
+		exit 1
 	fi
 
 	# verify specified ros version is installed
@@ -171,6 +171,10 @@ has been built (source /opt/ros/\${ros_version}/setup.sh; catkin_make).\n\
 		__ROS_PROMPT=1
 	elif ! echo \${PS1} | grep '\[baxter' &>/dev/null; then
 		export PS1="[baxter - \${ROS_MASTER_URI}] \${PS1}"
+	fi
+
+  if [ `uname -s` == "Darwin"]; then
+    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/opt/ros/${ros_version}/lib
 	fi
 
 EOF
